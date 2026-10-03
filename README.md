@@ -35,7 +35,6 @@ ML_Assessment/
 ├── requirements.txt
 ├── README.md
 ├── validation_predictions.csv
-├── freight-rate-ml-assessment.pdf
 └── .gitignore
 ```
 
