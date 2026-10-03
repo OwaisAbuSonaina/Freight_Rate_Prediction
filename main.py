@@ -35,13 +35,19 @@ data['expected_base_rate'] = data['distance'] * data['quote_signal']
 
 data['market_pressure'] = data['market_index'] * data['quote_signal']
 
-# Set native category types (LightGBM can deal with catigorical features)
+# Temporal Feature Engineering
+data['date'] = pd.to_datetime(data['date'])
+data['month'] = data['date'].dt.month
+data['day'] = data['date'].dt.day
+data['dayofweek'] = data['date'].dt.dayofweek
+data['dayofyear'] = data['date'].dt.dayofyear
+
+# Set native category types (LightGBM can deal with categorical features)
 categorical_cols = ['pickup', 'delivery', 'equipment']
 data[categorical_cols] = data[categorical_cols].astype('category')
 
 # Drop unused columns
 data = data.drop(columns=['date', 'pickup_lat', 'pickup_lon', 'delivery_lat', 'delivery_lon'])
-
 
 ###################################
 # SPLIT DATA
@@ -52,7 +58,6 @@ y = data['posted_rate']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 print("Data Ready for Training.\n\n")
-
 
 ###################################
 # TRAIN & EVALUATE
@@ -70,18 +75,18 @@ preds = np.expm1(model.predict(X_test))
 
 print(
     f"""
-    ############################
-    EVALUATION
-    ############################
-    \n
-    MAE: {mean_absolute_error(y_test, preds):.2f}
-    \n
-    RMSE: {root_mean_squared_error(y_test, preds):.2f}
-    \n
-    R2: {r2_score(y_test, preds):.2f}    
-    \n
-    Time: {(end-start):.2f}
-    \n\n
+############################
+EVALUATION
+############################
+\n
+MAE: {mean_absolute_error(y_test, preds):.2f}
+\n
+RMSE: {root_mean_squared_error(y_test, preds):.2f}
+\n
+R2: {r2_score(y_test, preds):.2f}    
+\n
+Time: {(end-start):.2f}
+\n\n
 """
 )
 
